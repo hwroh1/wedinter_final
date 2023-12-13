@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: black;
+        }
+
+        .eye-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            display: flex;
+            transform: translate(-50%, -50%);
+        }
+
+        .eye {
+            width: 150px;
+            height: 150px;
+            background-color: black;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            border: 2px solid white;
+            margin: 0 10px;
+        }
+
+        .pupil {
+            width: 100px;
+            height: 100px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: transform 100ms;
+        }
+    </style>
+</head>
+<body>
+    <div class="eye-container">
+        <div class="eye" id="left-eye">
+            <div class="pupil"></div>
+        </div>
+        <div class="eye" id="right-eye">
+            <div class="pupil"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('mousemove', updateEyePosition);
+
+        function updateEyePosition(event) {
+            const eyeContainer = document.querySelector('.eye-container');
+            const containerRect = eyeContainer.getBoundingClientRect();
+            const containerCenterX = containerRect.left + containerRect.width / 2;
+            const containerCenterY = containerRect.top + containerRect.height / 2;
+
+            moveEye(document.getElementById('left-eye'), event.clientX, event.clientY, containerCenterX, containerCenterY);
+            moveEye(document.getElementById('right-eye'), event.clientX, event.clientY, containerCenterX, containerCenterY);
+        }
+
+        function moveEye(eye, mouseX, mouseY, containerCenterX, containerCenterY) {
+            const eyeRect = eye.getBoundingClientRect();
+            const eyeCenterX = eyeRect.left + eyeRect.width / 2;
+            const eyeCenterY = eyeRect.top + eyeRect.height / 2;
+
+            const angle = Math.atan2(mouseY - containerCenterY, mouseX - containerCenterX);
+            const distance = Math.min(eyeRect.width / 4, eyeRect.height / 4);
+
+            const offsetX = Math.cos(angle) * distance;
+            const offsetY = Math.sin(angle) * distance;
+
+            eye.querySelector('.pupil').style.transform = `translate(-50%, -50%) translate(${offsetX}px, ${offsetY}px)`;
+        }
+
+       document.addEventListener('DOMContentLoaded', () => {
+            setInterval(blinkEyes, 5000);
+
+            document.addEventListener('click', () => {
+                const eyes = document.querySelectorAll('.eye');
+                eyes.forEach(eye => {
+                    toggleEyeState(eye);
+                });
+            });
+
+            function blinkEyes() {
+                const pupils = document.querySelectorAll('.pupil');
+                pupils.forEach(pupil => {
+                    pupil.style.transform = 'translate(-50%, -50%) scale(1, 0)';
+
+                    setTimeout(() => {
+                        pupil.style.transform = 'translate(-50%, -50%) scale(1, 1)';
+                    }, 200);
+                });
+            }
+
+            function toggleEyeState(eye) {
+                const pupil = eye.querySelector('.pupil');
+                const isClosed = pupil.style.transform.includes('scale(1, 0)');
+
+                if (isClosed) {
+                    pupil.style.transform = 'translate(-50%, -50%) scale(1, 1)';
+                } else {
+                    pupil.style.transform = 'translate(-50%, -50%) scale(1, 0)';
+                    setTimeout(() => {
+                        pupil.style.transform = 'translate(-50%, -50%) scale(1, 1)';
+                    }, 200);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

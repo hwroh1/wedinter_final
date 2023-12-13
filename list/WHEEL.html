@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: black;
+    }
+
+    .background-image {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      transition: left 0.5s ease-in-out;
+    }
+
+    #rotatable-image {
+      position: absolute;
+      transform-origin: center center;
+      margin: auto;
+      width: 300px;
+     height: 300px;
+      transition: transform 0.5s ease-in-out; /* Increase the duration for a slower rotation */
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <img id="rotatable-image" src="./wheel.png" alt="Rotatable Image" onclick="rotateImage(event)">
+  
+  <script>
+    let rotationAngle = 0;
+    let clickCount = 0;
+
+    function rotateImage(event) {
+      const image = document.getElementById('rotatable-image');
+      const backgroundImages = document.querySelectorAll('.background-image');
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+      
+      const clickX = event.clientX;
+      const clickY = event.clientY;
+
+      const deltaX = clickX - centerX;
+      const deltaY = centerY - clickY; // Note: Y-axis is inverted in the browser
+
+      const angleRad = Math.atan2(deltaY, deltaX);
+      const angleDeg = angleRad * (180 / Math.PI);
+
+      rotationAngle += angleDeg * 0.3;
+
+      image.style.transform = `translate(-50%, -50%) rotate(${rotationAngle}deg)`;
+
+      // Update background images position based on wheel rotation
+      const backgroundMoveDistance = 80; // Adjust this value as needed
+      backgroundImages.forEach((bgImage) => {
+        const currentLeft = parseFloat(bgImage.style.left) || window.innerWidth;
+        bgImage.style.left = `${currentLeft - backgroundMoveDistance}px`;
+      });
+
+      // Increment click count and create more stones every 10 clicks
+      clickCount++;
+      if (clickCount % 10 === 0) {
+        createRandomImage();
+      }
+    }
+
+    function createRandomImage() {
+      const imageTypes = ['stone1.png', 'stone2.png', 'stone3.png'];
+      const randomType = imageTypes[Math.floor(Math.random() * imageTypes.length)];
+
+      const image = new Image();
+      image.src = `./${randomType}`;
+      image.classList.add('background-image');
+
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+
+      const offsetX = Math.random() * 100 + window.innerWidth; // Generate from the right
+      const offsetY = Math.random() * 100 - 50; // Adjust this range as needed
+
+      image.style.left = `${offsetX}px`;
+      image.style.top = `${centerY + offsetY}px`;
+
+      document.body.appendChild(image);
+    }
+
+    // Set the initial position once the page has fully loaded
+    window.addEventListener('load', () => {
+      const image = document.getElementById('rotatable-image');
+      const imageWidth = image.width;
+      const imageHeight = image.height;
+      const centerX = window.innerWidth / 2;
+      const centerY = window.innerHeight / 2;
+
+      image.style.left = `${centerX - imageWidth / 2}px`;
+      image.style.top = `${centerY - imageHeight / 2}px`;
+
+      // Create three initial random images
+      for (let i = 0; i < 3; i++) {
+        createRandomImage();
+      }
+    });
+  </script>
+</body>
+</html>

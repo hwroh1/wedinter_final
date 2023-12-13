@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BUTTON</title>
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: black; /* Set the background color to black */
+    }
+
+    #playButton {
+      display: inline-block;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%; /* Make it circular */
+      background-color: white; /* Set the button color to white */
+      color: red; /* Set the text color to red */
+      font-size: 32px;
+      font-weight: 800;
+      text-align: center;
+      text-decoration: none;
+      outline: none;
+      cursor: pointer;
+      border: none;
+      transition: background-color 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #playButton:active {
+      background-color: #eee; /* Darker button color when pressed */
+    }
+
+    #videoContainer {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+    }
+
+    #videoContainer video {
+      max-width: 100%;
+      max-height: 100%;
+      display: block;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+  <button id="playButton">DON'T PRESS THIS BUTTON</button>
+
+  <div id="videoContainer">
+    <video controls autoplay id="randomVideo" onended="videoEnded()">
+      <!-- Video source will be dynamically set using JavaScript -->
+    </video>
+  </div>
+
+    <script>
+      let alertShown = false;
+
+      document.getElementById('playButton').addEventListener('click', playRandomVideo);
+
+      function playRandomVideo() {
+        // Add a class to indicate the pressed state
+        document.getElementById('playButton').classList.add('pressed');
+
+        // Array of video URLs
+        const videoUrls = [
+          'explode.mp4',
+          'dinosaur.mp4',
+          'missile.mp4',
+          'car.mp4',
+          'cat.mp4'
+        ];
+
+        // Get a random index from the array
+        const randomIndex = Math.floor(Math.random() * videoUrls.length);
+
+        // Check if the alert was shown previously
+        if (alertShown) {
+          // Reset the alertShown flag
+          alertShown = false;
+
+          // Hide the video container
+          document.getElementById('videoContainer').style.display = 'none';
+
+          // Show the button
+          document.getElementById('playButton').style.display = 'block';
+
+          // Remove the pressed state from the button
+          document.getElementById('playButton').classList.remove('pressed');
+        } else {
+          // Randomly decide whether to show an alert
+          if (Math.random() < 0.5) {
+            alert('아무 일도 일어나지 않았다.');
+            alertShown = true; // Set the flag to true after the alert is shown
+          }
+
+          // Check if there is a video URL at the random index and the alert has not been shown
+          if (videoUrls[randomIndex] && !alertShown) {
+            // Hide the button
+            document.getElementById('playButton').style.display = 'none';
+
+            // Show the video container
+            document.getElementById('videoContainer').style.display = 'block';
+
+            // Set the video source
+            const randomVideoElement = document.getElementById('randomVideo');
+            randomVideoElement.src = videoUrls[randomIndex];
+
+            // Set the autoplay attribute dynamically based on whether the alert has been shown
+            randomVideoElement.autoplay = !alertShown;
+          }
+        }
+      }
+
+      function videoEnded() {
+        // Hide the video container
+        document.getElementById('videoContainer').style.display = 'none';
+
+        // Show the button
+        document.getElementById('playButton').style.display = 'block';
+
+        // Remove the pressed state from the button
+        document.getElementById('playButton').classList.remove('pressed');
+      }
+    </script>
+</body>
+</html>

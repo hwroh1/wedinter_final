@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BUBBLE</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        #square {
+            width: 200px;
+            height: 200px;
+            background-image: url('bubblemove.gif');
+            background-size: cover;
+            transition: width 0.5s, height 0.5s;
+        }
+    </style>
+</head>
+<body>
+    <div id="square"></div>
+    <script>
+        var square = document.getElementById('square');
+        var growing = false;
+
+        function startGrowing() {
+            growing = true;
+            grow();
+        }
+
+        function stopGrowing() {
+            growing = false;
+        }
+
+        function grow() {
+            if (growing) {
+                var currentWidth = square.offsetWidth;
+                var currentHeight = square.offsetHeight;
+
+                // Increase both width and height by 30 pixels
+                square.style.width = (currentWidth + 30) + 'px';
+                square.style.height = (currentHeight + 30) + 'px';
+
+                requestAnimationFrame(grow);
+            }
+        }
+
+        function hideEnough() {
+            var audio = new Audio('pop.mp3');
+            var currentWidth = square.offsetWidth;
+            var currentHeight = square.offsetHeight;
+
+            if (currentWidth > 822 && currentHeight > 822) {
+                square.style.display = 'none';
+                audio.play();
+            } else {
+                requestAnimationFrame(hideEnough);
+            }
+        }
+
+        square.addEventListener('mousedown', startGrowing);
+        square.addEventListener('mouseup', stopGrowing);
+        square.addEventListener('mouseleave', stopGrowing);
+
+        hideEnough();
+    </script>
+</body>
+</html>

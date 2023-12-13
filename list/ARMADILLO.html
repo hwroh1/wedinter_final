@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>ARMADILLO</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: black;
+    }
+
+    #video-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #myVideo {
+      max-width: 80%;
+      height: auto;
+      display: none;
+    }
+
+    /* Style the video controls */
+    #myVideo::-webkit-media-controls {
+      display: none !important; /* Hide the default controls */
+    }
+
+    #fallbackImage {
+      max-width: 80%;
+      height: auto;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="video-container">
+    <video id="myVideo" controls>
+      <source src="./ARMADILLO.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <img id="fallbackImage" src="./pre.png" alt="Fallback Image">
+  </div>
+
+  <script>
+    const video = document.getElementById('myVideo');
+    const fallbackImage = document.getElementById('fallbackImage');
+
+    // Function to handle the click event on the video container
+    function handleVideoContainerClick() {
+      // Hide the fallback image
+      fallbackImage.style.display = 'none';
+
+      // Show the video and start playing
+      video.style.display = 'block';
+      video.play();
+
+      // Add event listener for ended
+      video.addEventListener('ended', function () {
+        // Hide or remove the video element after it finishes playing
+        video.style.display = 'none';
+        fallbackImage.style.display = 'block';
+      });
+
+      // Add event listener for error (if the video cannot be played)
+      video.addEventListener('error', function () {
+        // Hide the video and show the fallback image if an error occurs
+        video.style.display = 'none';
+        fallbackImage.style.display = 'block';
+      });
+    }
+
+    // Add a click event listener to the video container
+    document.getElementById('video-container').addEventListener('click', handleVideoContainerClick);
+  </script>
+</body>
+
+</html>

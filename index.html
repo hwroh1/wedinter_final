@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.10.4/MotionPathPlugin.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #fff;
+            margin: 0;
+            padding: 0;
+            position: relative;
+        }
+
+        .carousel-container {
+            position: absolute;
+            top: 4%;
+            left: 1%;
+        }
+
+        .container {
+            position: relative;
+            max-width: 1500px;
+            margin: auto;
+        }
+
+        .wrapper {
+            position: relative;
+        }
+
+        .item {
+            width: 100px;
+            height: 100px;
+            color: black;
+            text-align: center;
+            line-height: 100px;
+            font-size: 90px;
+            font-weight: 900;
+            font-family: "Roboto", sans-serif;
+            border-radius: 100%;
+            z-index: 1;
+            cursor: pointer;
+        }
+
+        a {
+              color: inherit;
+              text-decoration: none;
+        }
+
+        .item.hide {
+            color: white;
+        }
+
+        .item.active {
+            background-color: black;
+            font-size: 140px;
+            line-height: 120px;
+        }
+
+        svg {
+            height: 1000px;
+            overflow: visible;
+            width: 1000px;
+            z-index: -1;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .st0 {
+            fill: none;
+            stroke-width: 2;
+            stroke-miterlimit: 1;
+        }
+
+        .start {
+            position: absolute;
+            top: 50%;
+            right: -30px;
+        }
+
+        .writing{
+            position: fixed;
+            right: 2%;
+            top:4%;
+            width: 500px;
+            font-size: 18px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="carousel-container">
+        <div class="container">
+            <div class="wrapper">
+                <div class="item 1 active">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="./list/WINDOW.html">WINDOW</a>
+                </div>
+                <div class="item 2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="./list/PUPIL.html">PUPIL</a>
+                </div>
+                <div class="item 3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="./list/BUTTON.html">BUTTON</a>
+                </div>
+                <div class="item 4 hide">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="./list/WHEEL.html">WHEEL</a>
+                </div>
+                <div class="item 5 hide">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="./list/ARMADILLO.html">ARMADILLO</a>
+                </div>
+                <div class="item 6 hide">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="./list/PINGPONG.html">BALL</a>
+                </div>
+                <div class="item 7 hide">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="./list/BUBBLE.html">BUBBLE</a>
+                </div>
+                <div class="item 8">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="./list/SEED.html">SEED</a>
+                </div>
+                
+            <svg viewBox="0 0 400 400">
+                <circle id="holder" class="st0" cx="200" cy="200" r="190" />
+            </svg>
+        </div>
+        <div class="start"></div>
+        </div>
+    </div>
+    <div class="writing">
+        상상력은 아무런 조건이 없는 상황에서는 오히려 잘 발휘되지 않습니다. 제한된 상황을 헤쳐나가기 위해서 우리는 상상력을 발휘합니다. 원이라는 조건을 설정해 그 안에서 어떤 인터렉션을 구성할 수 있을지 고민하며 만든 콘텐츠입니다.
+        <br><br>
+        의도적으로 특별한 설명 없이 제작되었습니다. 다양한 시도를 해보시며 각 페이지를 탐구해보시길 바랍니다.
+    </div>
+
+    <script>
+    gsap.registerPlugin(MotionPathPlugin);
+
+    const circlePath = MotionPathPlugin.convertToPath("#holder", false)[0];
+    circlePath.id = "circlePath";
+    document.querySelector("svg").prepend(circlePath);
+
+    let items = gsap.utils.toArray(".item"),
+        numItems = items.length,
+        itemStep = 1 / numItems,
+        wrapProgress = gsap.utils.wrap(0, 1),
+        snap = gsap.utils.snap(itemStep),
+        wrapTracker = gsap.utils.wrap(0, numItems),
+        tracker = { item: 0 };
+
+    gsap.set(items, {
+        motionPath: {
+            path: circlePath,
+            align: circlePath,
+            alignOrigin: [0.5, 0.5],
+            end: i => i / items.length
+        },
+        scale: 0.9
+    });
+
+    const tl = gsap.timeline({
+        paused: true,
+        reversed: true
+    });
+
+    tl.to('.wrapper', {
+        rotation: 360,
+        transformOrigin: 'center',
+        duration: 1,
+        ease: 'none'
+    });
+
+    tl.to(items, {
+        rotation: "-=360",
+        transformOrigin: 'center',
+        duration: 1,
+        ease: 'none',
+    }, 0);
+
+    tl.to(tracker, {
+        item: numItems,
+        duration: 1,
+        ease: 'none',
+        modifiers: {
+            item(value) {
+                return wrapTracker(numItems - Math.round(value))
+            }
+        }
+    }, 0);
+
+    items.forEach(function (el, i) {
+        el.addEventListener("click", function () {
+            var current = tracker.item,
+                activeItem = i;
+
+            if (current > i) {
+                moveWheel(-itemStep);
+            } else {
+                moveWheel(itemStep);
+            }
+        });
+    });
+
+    document.addEventListener('keydown', function (event) {
+        switch (event.key) {
+            case 'ArrowLeft':
+            case 'ArrowUp':
+                moveWheel(itemStep);
+                break;
+            case 'ArrowRight':
+            case 'ArrowDown':
+                moveWheel(-itemStep);
+                break;
+        }
+    });
+
+    function moveWheel(amount) {
+        let progress = tl.progress();
+        tl.progress(wrapProgress(snap(tl.progress() + amount)));
+        let next = tracker.item;
+        tl.progress(progress);
+
+                for(let i=0; i<4; i++){
+            let start = i + next + 3;
+                if(start > 7){
+                    start = start - 8;
+            }    
+            items[start].style.color = "white";
+        }
+
+        for(let i=0; i<2; i++){
+            let start = i + next + 1;
+                if(start > 7){
+                    start = start - 8;
+            }    
+            items[start].style.color = "black";
+        }
+        
+        for(let i=0; i<2; i++){
+            let start = i + next + 6;
+                if(start > 7){
+                    start = start - 8;
+            }    
+            items[start].style.color = "black";
+        }
+
+        console.log(next);
+        document.querySelector('.item.active').classList.remove('active');
+        items[next].classList.add('active');
+
+
+        gsap.to(tl, {
+            progress: snap(tl.progress() + amount),
+            modifiers: {
+                progress: value => wrapProgress(value),
+            }
+        });
+    }
+</script>
+</body>
+
+</html>

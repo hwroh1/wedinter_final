@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: black;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    video {
+      position: absolute;
+      controls: none; /* Hide the default video controls */
+    }
+  </style>
+  <title>SEED</title>
+</head>
+<body>
+  <canvas id="gravityCanvas"></canvas>
+  <script>
+    const canvas = document.getElementById('gravityCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const videoSources = [
+      'flower1.mp4',
+      'flower2.mp4',
+      'flower3.mp4',
+      'flower4.mp4',
+      'flower5.mp4',
+    ];
+
+    let circles = [];
+
+    function update(circle) {
+      if (circle.isFalling) {
+        circle.velocityY += circle.accelerationY;
+        circle.y += circle.velocityY;
+
+        if (circle.y + circle.radius > canvas.height) {
+          circle.isFalling = false;
+
+          // Set the video position to match the circle's position
+          const video = document.createElement('video');
+          const randomIndex = Math.floor(Math.random() * videoSources.length);
+          video.src = videoSources[randomIndex];
+          video.width = 300; // Adjust the size of the video
+          video.height = 300;
+          video.style.position = 'absolute';
+          video.style.left = circle.x - video.width / 2 + 'px';
+          video.style.top = canvas.height - video.height + 'px'; // Adjusted to be at the bottom of the canvas
+
+          document.body.appendChild(video);
+
+          video.play();
+        }
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (const circle of circles) {
+        update(circle);
+
+        // Draw the circle at its current position
+        ctx.beginPath();
+        ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
+        ctx.fillStyle = circle.color;
+        ctx.fill();
+        ctx.closePath();
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    // Add a click event listener to create a new falling circle
+    canvas.addEventListener('click', (event) => {
+      const newCircle = {
+        x: event.clientX,
+        y: event.clientY,
+        radius: 10,
+        color: 'white',
+        isFalling: true,
+        velocityY: 0,
+        accelerationY: 0.5,
+      };
+      circles.push(newCircle);
+    });
+
+    animate();
+  </script>
+</body>
+</html>
